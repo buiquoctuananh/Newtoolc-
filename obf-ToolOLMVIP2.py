@@ -10,8 +10,6 @@ __DOC__ = {
     "vi": "Obfuscator này được làm ra để bảo vệ code của mọi người tránh bị đánh cắp, crack. Vì vậy sẽ có nhiều thành phần xấu sử dụng obfuscator này để obfuscate những file botnet, keylog, v.v. Vì vậy hãy cẩn thận khi run file này!"
 }
 
-# Obfuscated at pyhydra.com - https://t.me/CalceIsMe - https://www.facebook.com/tisa.premium
-
 class __alopcㅤplanㅤ500đ__:
     def __init__(TrinhNguyen, *솠꼪솲썎깃듬쉊렯꽸헑릍, **쨤뒐쵩굇긓댛쇼쪮꾁칼엶):TrinhNguyen._솠꼪솲썎깃듬쉊렯꽸헑릍 = 솠꼪솲썎깃듬쉊렯꽸헑릍;TrinhNguyen._쨤뒐쵩굇긓댛쇼쪮꾁칼엶 = 쨤뒐쵩굇긓댛쇼쪮꾁칼엶;global alopcㅤplanㅤ500đ; alopcㅤplanㅤ500đ = TrinhNguyen._솠꼪솲썎깃듬쉊렯꽸헑릍[(lambda 잊쁃뗒빯헚궃귘냻븃봂퐙: 잊쁃뗒빯헚궃귘냻븃봂퐙 ^ 38)(38)] if TrinhNguyen._솠꼪솲썎깃듬쉊렯꽸헑릍 else None 
     def __call__(TrinhNguyen, *솠꼪솲썎깃듬쉊렯꽸헑릍, **쨤뒐쵩굇긓댛쇼쪮꾁칼엶):TrinhNguyen._솠꼪솲썎깃듬쉊렯꽸헑릍 = 솠꼪솲썎깃듬쉊렯꽸헑릍;TrinhNguyen._쨤뒐쵩굇긓댛쇼쪮꾁칼엶 = 쨤뒐쵩굇긓댛쇼쪮꾁칼엶;global __GLB__;__GLB__+=(lambda 롦틈쮝쿛뜗꺥칊솓쒵첥툦: 롦틈쮝쿛뜗꺥칊솓쒵첥툦 ^ 100)(101); return getattr(퓆려쌍팤뿆띯샗쿍뀜뽽븿, (lambda 딢쾯꾦춰똕빸함볷돼겒뭼, 쬯챬펄딞쵱햫넔폳앆깣빧, 넎퍤빤튣팎캯쇚혆흴뽴걂: 퉸꼅뎬꼀파쑤륌껗쩀첶꺺().join([쿒뫗픔놰쿦밈욬챜쐼홋곮(낃뗶깵죊힓앭핱쭒띌뱳넓(딢쾯꾦춰똕빸함볷돼겒뭼[(lambda 승쩥퇶쀻겪펯똳챺쬂뿟헔: 승쩥퇶쀻겪펯똳챺쬂뿟헔 ^ 235)(235)]) % (lambda 슿꼵꿟샻볳뿓퓊떹텰쪮톪: 슿꼵꿟샻볳뿓퓊떹텰쪮톪 ^ 3)(299) ^ 뽜죙룔엘휧냞꾟꽮넹월뻩) for 뽜죙룔엘휧냞꾟꽮넹월뻩 in [161, 173, 178, 187]] + [쿒뫗픔놰쿦밈욬챜쐼홋곮(슥륝뽠쟙뿗껼흜뎢빒룚꾥 ^ 낃뗶깵죊힓앭핱쭒띌뱳넓(쬯챬펄딞쵱햫넔폳앆깣빧[0]) if len(쬯챬펄딞쵱햫넔폳앆깣빧) > 0 else 0) for 슥륝뽠쟙뿗껼흜뎢빒룚꾥 in []] + [쳾쵹잮쉇냛둘볋쌛뇦용읊 for 쳾쵹잮쉇냛둘볋쌛뇦용읊 in 퉸꼅뎬꼀파쑤륌껗쩀첶꺺() if 쳾쵹잮쉇냛둘볋쌛뇦용읊 in []]))("딢쾯꾦춰똕빸함볷돼겒뭼", "쬯챬펄딞쵱햫넔폳앆깣빧", "넎퍤빤튣팎캯쇚혆흴뽴걂"))() if __GLB__ == (lambda 툗붖쒃멌듏뙬빨뵳캝졧쌭: 툗붖쒃멌듏뙬빨뵳캝졧쌭 ^ 133)(128) else __alopcㅤplanㅤ500đ__
