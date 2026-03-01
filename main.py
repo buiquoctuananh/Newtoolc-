@@ -5,8 +5,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 IS_ANDROID=('ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or os.path.exists('/system/build.prop'))
-IS_REPLIT=('REPL_ID' in os.environ or 'REPLIT_DB_URL' in os.environ or os.path.exists('/home/runner'))
-W=48 if IS_ANDROID else 70
+IS_IOS=(sys.platform=='darwin' and not os.path.exists('/usr/bin/python3') and os.path.exists(os.path.expanduser('~/Documents')))
+IS_ASHELL=('ASHELL' in os.environ or os.path.exists(os.path.expanduser('~/Library/Application Support/com.holzschu.a-Shell')))
+W=48 if (IS_ANDROID or IS_IOS or IS_ASHELL) else 70
 
 class C:
     RED='\033[91m';GREEN='\033[92m';YELLOW='\033[93m';BLUE='\033[94m'
@@ -17,13 +18,15 @@ class C:
     TEAL='\033[38;5;87m';LIME='\033[38;5;154m';PINK='\033[38;5;213m';INDIGO='\033[38;5;105m'
     BG_RED='\033[48;5;52m';BG_BLUE='\033[48;5;17m';BG_GREEN='\033[48;5;22m';BG_GOLD='\033[48;5;58m'
 
+IS_MOBILE=(IS_ANDROID or IS_IOS or IS_ASHELL)
+
 def strip_ansi(t): return re.sub(r'\033\[[0-9;]*m','',t)
 def hide_cursor():
-    if not IS_ANDROID and not IS_REPLIT: print('\033[?25l',end='',flush=True)
+    if not IS_MOBILE: print('\033[?25l',end='',flush=True)
 def show_cursor():
-    if not IS_ANDROID and not IS_REPLIT: print('\033[?25h',end='',flush=True)
+    if not IS_MOBILE: print('\033[?25h',end='',flush=True)
 def clear_line():
-    if not IS_ANDROID: print('\033[2K\033[G',end='',flush=True)
+    if not IS_MOBILE: print('\033[2K\033[G',end='',flush=True)
 
 def a_divider(char='━',color=C.CYAN): print(f'{color}{char*W}{C.END}')
 def a_thin(color=C.GRAY): print(f'{color}{"╌"*W}{C.END}')
@@ -94,22 +97,22 @@ def d_vip_card(username,display_name):
     print(f'{C.GOLD}{"▄"*W}{C.END}');print()
 
 def ui_divider(char=None,color=None):
-    if IS_ANDROID: a_divider(char or '━',color or C.CYAN)
+    if IS_MOBILE: a_divider(char or '━',color or C.CYAN)
     else: d_divider(char or '═',color or C.BLUE)
 def ui_thin(color=None):
-    if IS_ANDROID: a_thin(color or C.GRAY)
+    if IS_MOBILE: a_thin(color or C.GRAY)
     else: d_thin(color or C.GRAY)
 def ui_center(text,color=C.WHITE,bold=False):
-    if IS_ANDROID: a_center(text,color,bold)
+    if IS_MOBILE: a_center(text,color,bold)
     else: d_center(text,color,bold)
 def ui_box(lines,color=C.CYAN,title=''):
-    if IS_ANDROID: a_box(lines,color,title)
+    if IS_MOBILE: a_box(lines,color,title)
     else: d_box(lines,color,title)
 def ui_badge(text,kind='info'):
-    if IS_ANDROID: a_badge(text,kind)
+    if IS_MOBILE: a_badge(text,kind)
     else: d_badge(text,kind)
 def ui_vip_card(username,display_name):
-    if IS_ANDROID: a_vip_card(username,display_name)
+    if IS_MOBILE: a_vip_card(username,display_name)
     else: d_vip_card(username,display_name)
 
 class Spinner:
@@ -122,11 +125,11 @@ class Spinner:
             clear_line();print(f'  {self.color}{f}{C.END}  {C.WHITE}{self.msg}{C.END}',end='',flush=True);time.sleep(0.08)
         clear_line();show_cursor()
     def start(self):
-        if IS_ANDROID: print(f'  {self.color}⟳{C.END}  {C.WHITE}{self.msg}…{C.END}');return
+        if IS_MOBILE: print(f'  {self.color}⟳{C.END}  {C.WHITE}{self.msg}…{C.END}');return
         self._t=threading.Thread(target=self._spin,daemon=True);self._t.start()
     def stop(self,ok=True,msg=''):
         label=msg or self.msg
-        if IS_ANDROID:
+        if IS_MOBILE:
             icon=f'{C.BGREEN}✅{C.END}' if ok else f'{C.BRED}❌{C.END}'
             print(f'  {icon}  {C.WHITE}{label}{C.END}');return
         self._stop.set()
@@ -138,7 +141,7 @@ def progress_bar(pct,width,color=C.CYAN,bg=C.GRAY):
     filled=int(width*pct/100)
     return f'{color}{"█"*filled}{bg}{"░"*(width-filled)}{C.END}'
 def animate_progress(label='',duration=1.0):
-    if IS_ANDROID:
+    if IS_MOBILE:
         bw=max(8,W-len(strip_ansi(label))-10);bar=progress_bar(100,bw)
         print(f'  {C.BCYAN}{label}{C.END} {bar} {C.BYELLOW}100%{C.END}');return
     hide_cursor();steps,bw=40,36
@@ -148,26 +151,24 @@ def animate_progress(label='',duration=1.0):
         time.sleep(duration/steps)
     print();show_cursor()
 def type_print(text,color=C.WHITE,delay=0.018):
-    if IS_ANDROID or IS_REPLIT: print(f'{color}{text}{C.END}');return
+    if IS_MOBILE: print(f'{color}{text}{C.END}');return
     hide_cursor()
     for ch in text: print(f'{color}{ch}{C.END}',end='',flush=True);time.sleep(delay)
     show_cursor();print()
 def pulse_banner(text,color=C.CYAN):
-    if IS_ANDROID or IS_REPLIT: print(f'{color}{text[:W]}{C.END}');return
+    if IS_MOBILE: print(f'{color}{text[:W]}{C.END}');return
     pad=max(0,(W-len(text))//2);colors=[C.BLUE,C.CYAN,C.BCYAN,C.BWHITE,C.BCYAN,C.CYAN,C.BLUE]
     hide_cursor()
     for c in colors: print(f'\r{" "*pad}{c}{text}{C.END}',end='',flush=True);time.sleep(0.045)
     print();show_cursor()
 def slide_in(lines,delay=0.03):
     hide_cursor()
-    for line in lines: print(line);(time.sleep(delay) if not IS_ANDROID else None)
+    for line in lines: print(line);(time.sleep(delay) if not IS_MOBILE else None)
     show_cursor()
 
-def clr():
-    # Replit terminal hỗ trợ clear
-    os.system('cls' if os.name=='nt' else 'clear')
+def clr(): os.system('cls' if os.name=='nt' else 'clear')
 
-def _android_logo():
+def _mobile_logo():
     inner=W-2
     return [
         f'{C.BCYAN}┌{"─"*inner}┐{C.END}',
@@ -187,9 +188,9 @@ def _desktop_logo():
     ]
 def header(title='',subtitle='',animated=False):
     clr();print()
-    if IS_ANDROID:
+    if IS_MOBILE:
         a_divider('━',C.BCYAN)
-        for line in _android_logo(): print(line)
+        for line in _mobile_logo(): print(line)
         a_divider('━',C.BCYAN)
         if title:
             a_thin(C.GRAY);a_center(f'◈  {title}  ◈',C.BYELLOW,bold=True)
@@ -197,7 +198,7 @@ def header(title='',subtitle='',animated=False):
             a_thin(C.GRAY)
     else:
         d_divider('═',C.BLUE);logo=_desktop_logo()
-        if animated and not IS_REPLIT: slide_in(logo,delay=0.03)
+        if animated: slide_in(logo,delay=0.03)
         else:
             for line in logo: print(line)
         d_divider('═',C.BLUE)
@@ -208,7 +209,7 @@ def header(title='',subtitle='',animated=False):
     print()
 
 def prompt_input(label,icon='▶',color=C.YELLOW):
-    if IS_ANDROID:
+    if IS_MOBILE:
         print(f'\n  {C.CYAN}▸{C.END} {color}{label}{C.END}');print(f'  {C.GOLD}›{C.END} ',end='',flush=True)
     else:
         print(f'\n  {C.CYAN}{icon} {C.END}{color}{label}{C.END}',end='');print(f'  {C.GRAY}›{C.END} ',end='')
@@ -241,20 +242,25 @@ HEADERS={
     'referer':'https://olm.vn/'
 }
 
-# ── Lưu file vào thư mục .data trong project (Replit persistent storage) ──
 def get_appdata_dir():
-    if IS_REPLIT:
-        # Replit giữ data trong thư mục .data (persist qua restart)
-        data_dir=os.path.join(os.getcwd(),'.data')
+    home=os.path.expanduser('~')
+    # Detect iOS bằng đường dẫn home thực tế (không cần biến môi trường)
+    is_ios_path=('/var/mobile' in home or '/private/var/mobile' in home)
+    if IS_IOS or IS_ASHELL or is_ios_path:
+        data_dir=os.path.join(home,'Documents','.olmdata')
         os.makedirs(data_dir,exist_ok=True)
         return data_dir
+    if IS_ANDROID: return os.path.expanduser('~/.cache/google-chrome')
     if os.name=='nt': return os.path.join(os.getenv('LOCALAPPDATA',os.path.expanduser('~/AppData/Local')),'Microsoft','Windows','INetCache','IE')
-    elif sys.platform=='darwin': return os.path.expanduser('~/Library/Application Support/com.apple.Safari')
-    elif IS_ANDROID: return os.path.expanduser('~/.cache/google-chrome')
-    else: return os.path.expanduser('~/.cache/mozilla/firefox')
+    return os.path.expanduser('~/.local/share/olm')
 
 def get_device_hash():
-    return hashlib.sha256(f'{socket.gethostname()}{uuid.getnode()}'.encode()).hexdigest()[:8]
+    # iOS không có socket.gethostname() ổn định, dùng uuid + path thay thế
+    try: host=socket.gethostname()
+    except: host='iphone'
+    try: node=uuid.getnode()
+    except: node=0
+    return hashlib.sha256(f'{host}{node}'.encode()).hexdigest()[:8]
 
 def get_license_path(): os.makedirs(get_appdata_dir(),exist_ok=True);return os.path.join(get_appdata_dir(),f'.{get_device_hash()}sc')
 def get_trial_path(): os.makedirs(get_appdata_dir(),exist_ok=True);return os.path.join(get_appdata_dir(),f'.{get_device_hash()}tr')
@@ -311,7 +317,11 @@ def check_vip(username):
 
 def generate_olm_key():
     now=datetime.now()
-    device_id=hashlib.md5(f'{socket.gethostname()}{uuid.getnode()}'.encode()).hexdigest()[:16]
+    try: host=socket.gethostname()
+    except: host='iphone'
+    try: node=uuid.getnode()
+    except: node=0
+    device_id=hashlib.md5(f'{host}{node}'.encode()).hexdigest()[:16]
     h=hashlib.sha256(f'{device_id}{now.timestamp()}{random.randint(1000,9999)}'.encode()).hexdigest()
     return f'OLMFREE-{now:%d%m}-{h[:4].upper()}-{h[4:8].upper()}'
 
@@ -353,8 +363,7 @@ def handle_key_generation():
     return {'key':key,'remain':5,'expire':datetime.now().strftime('%Y-%m-%d'),'ip':get_public_ip()}
 
 def load_saved_accounts():
-    # Lưu accounts.json vào .data nếu chạy trên Replit
-    path=os.path.join(get_appdata_dir(),'accounts.json') if IS_REPLIT else 'accounts.json'
+    path=os.path.join(get_appdata_dir(),'accounts.json')
     if os.path.exists(path):
         try:
             with open(path,'r',encoding='utf-8') as f: return json.load(f),path
@@ -490,23 +499,13 @@ def get_assignments_fixed(session,pages_to_scan=5):
 def display_assignments_table(assignments):
     if not assignments: return
     print();ui_divider('─',C.PURPLE);ui_center('📚  DANH SÁCH BÀI CẦN LÀM  📚',C.BPURPLE,bold=True);ui_divider('─',C.PURPLE);print()
-    if IS_ANDROID:
-        for idx,item in enumerate(assignments,1):
-            max_t=W-4;title=(item['title'][:max_t-1]+'…' if len(item['title'])>max_t else item['title'])
-            tc=C.BLUE if item['is_video'] else(C.CYAN if item['is_ly_thuyet'] else C.LIME)
-            ic='🎬' if item['is_video'] else('📖' if item['is_ly_thuyet'] else '📝')
-            sc=C.BRED if 'chưa' in item['status'].lower() else C.BYELLOW
-            print(f'  {C.BYELLOW}[{idx}]{C.END} {ic} {tc}{item["type"]}{C.END}  {C.GRAY}{item["subject"]}{C.END}')
-            print(f'  {C.WHITE}{title}{C.END}');print(f'  {sc}→ {item["status"]}{C.END}');a_thin(C.GRAY)
-    else:
-        print(f'  {C.BOLD}{C.GRAY}{"#":>3}  {"Loại":<12} {"Môn":<15} {"Tên bài":<38} {"Trạng thái"}{C.END}');d_thin(C.GRAY)
-        for idx,item in enumerate(assignments,1):
-            title=item['title'][:35]+('…' if len(item['title'])>35 else '')
-            ic='🎬' if item['is_video'] else('📖' if item['is_ly_thuyet'] else '📝')
-            tc=C.BLUE if item['is_video'] else(C.CYAN if item['is_ly_thuyet'] else C.LIME)
-            sc=C.BRED if 'chưa' in item['status'].lower() else C.BYELLOW
-            print(f'  {C.BYELLOW}{idx:>3}.{C.END}  {ic} {tc}{item["type"]:<10}{C.END} {C.WHITE}{item["subject"]:<15}{C.END} {C.WHITE}{title:<38}{C.END} {sc}{item["status"]}{C.END}')
-        d_thin(C.GRAY)
+    for idx,item in enumerate(assignments,1):
+        max_t=W-4;title=(item['title'][:max_t-1]+'…' if len(item['title'])>max_t else item['title'])
+        tc=C.BLUE if item['is_video'] else(C.CYAN if item['is_ly_thuyet'] else C.LIME)
+        ic='🎬' if item['is_video'] else('📖' if item['is_ly_thuyet'] else '📝')
+        sc=C.BRED if 'chưa' in item['status'].lower() else C.BYELLOW
+        print(f'  {C.BYELLOW}[{idx}]{C.END} {ic} {tc}{item["type"]}{C.END}  {C.GRAY}{item["subject"]}{C.END}')
+        print(f'  {C.WHITE}{title}{C.END}');print(f'  {sc}→ {item["status"]}{C.END}');a_thin(C.GRAY)
     print()
 
 def _get_csrf(session,url):
@@ -614,16 +613,12 @@ def submit_assignment(session,assignment,user_id):
         data_log,total_time,correct_needed=create_data_log_for_normal(total_questions,100)
         csrf=_get_csrf(session,assignment['url']);ct=int(time.time())
         payload={
-            'id_user':user_id,
-            'id_cate':id_cate or '0','id_grade':page_params.get('id_grade','10'),
-            'id_courseware':id_courseware or '0',
-            'id_group':page_params.get('id_group','6148789559'),
-            'id_school':page_params.get('id_school','0'),
-            'time_init':str(ct-total_time),'name_user':'',
-            'type_vip':page_params.get('type_vip','0'),
-            'time_spent':str(total_time),
-            'data_log':json.dumps(data_log,separators=(',',':')),
-            'score':'100','answered':str(total_questions),'correct':str(correct_needed),
+            'id_user':user_id,'id_cate':id_cate or '0','id_grade':page_params.get('id_grade','10'),
+            'id_courseware':id_courseware or '0','id_group':page_params.get('id_group','6148789559'),
+            'id_school':page_params.get('id_school','0'),'time_init':str(ct-total_time),'name_user':'',
+            'type_vip':page_params.get('type_vip','0'),'time_spent':str(total_time),
+            'data_log':json.dumps(data_log,separators=(',',':')),'score':'100',
+            'answered':str(total_questions),'correct':str(correct_needed),
             'count_problems':str(total_questions),'missed':str(total_questions-correct_needed),
             'time_stored':str(ct),'date_end':str(ct),'ended':'1','save_star':'1',
         }
@@ -732,7 +727,7 @@ def solve_specific_from_list(session,user_id,is_vip,remaining_uses,assignments=N
     pause();return success_count>0,remaining_uses
 
 def print_tutorial():
-    header('HƯỚNG DẪN SỬ DỤNG','Đọc kỹ trước khi sử dụng',animated=True)
+    header('HƯỚNG DẪN SỬ DỤNG','Đọc kỹ trước khi sử dụng')
     sections=[
         ('👑  TÀI KHOẢN VIP',C.GOLD,['  • Kiểm tra tự động từ danh sách VIP','  • Không giới hạn lượt sử dụng']),
         ('🆓  TÀI KHOẢN FREE',C.CYAN,['  • Lần đầu: 1 lượt thử miễn phí','  • Mỗi key: 5 lượt/ngày','  • Hết lượt: vào lại tool và lấy key mới','  • Đổi IP: cần lấy key mới']),
@@ -742,7 +737,6 @@ def print_tutorial():
     for title,color,lines in sections:
         print(f'\n  {color}{C.BOLD}{title}{C.END}');ui_thin(color)
         for line in lines: print(f'  {C.WHITE}{line}{C.END}')
-        time.sleep(0.04)
     print();ui_divider();pause()
 
 def main_menu(session,user_id,user_name,is_vip,remaining_uses):
@@ -782,15 +776,9 @@ def main_menu(session,user_id,user_name,is_vip,remaining_uses):
 def main():
     global license_data
     clr();print()
-    if IS_ANDROID:
-        a_divider('━',C.BCYAN);a_center('⚡  OLM MASTER  ⚡',C.GOLD,bold=True)
-        a_center('AUTO SOLVER  ·  v3.2',C.BCYAN);a_center('bởi Tuấn Anh',C.GRAY);a_divider('━',C.BCYAN)
-    else:
-        pulse_banner('═'*W,C.BLUE);print()
-        type_print(f'{"  OLM MASTER — AUTO SOLVER":^{W}}',C.BCYAN,delay=0.022)
-        type_print(f'{"  Created by Tuấn Anh  ·  v3.2":^{W}}',C.GRAY,delay=0.015)
-        print();pulse_banner('═'*W,C.BLUE)
-    print();time.sleep(0.4)
+    a_divider('━',C.BCYAN);a_center('⚡  OLM MASTER  ⚡',C.GOLD,bold=True)
+    a_center('AUTO SOLVER  ·  v3.2',C.BCYAN);a_center('bởi Tuấn Anh',C.GRAY);a_divider('━',C.BCYAN)
+    print();time.sleep(0.3)
     print_tutorial()
     while True:
         session,user_id,user_name,actual_username=login_olm()
