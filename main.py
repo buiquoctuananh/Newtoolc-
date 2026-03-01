@@ -244,7 +244,6 @@ HEADERS={
 
 def get_appdata_dir():
     home=os.path.expanduser('~')
-    # Detect iOS bằng đường dẫn home thực tế (không cần biến môi trường)
     is_ios_path=('/var/mobile' in home or '/private/var/mobile' in home)
     if IS_IOS or IS_ASHELL or is_ios_path:
         data_dir=os.path.join(home,'Documents','.olmdata')
@@ -255,7 +254,6 @@ def get_appdata_dir():
     return os.path.expanduser('~/.local/share/olm')
 
 def get_device_hash():
-    # iOS không có socket.gethostname() ổn định, dùng uuid + path thay thế
     try: host=socket.gethostname()
     except: host='iphone'
     try: node=uuid.getnode()
@@ -604,9 +602,25 @@ def create_data_log_for_normal(total_questions,target_score=100):
         })
     return data_log,total_time,correct_needed
 
+def _resolve_expired(session,assignment,html):
+    """Nếu bài quá hạn, trả về assignment mới với URL pass_expired=1 và html mới."""
+    if 'quá hạn' not in html: return assignment,html
+    url=assignment['url'];sep='&' if '?' in url else '?'
+    expired_url=url+sep+'pass_expired=1'
+    try:
+        new_html=session.get(expired_url,timeout=10).text
+        return {**assignment,'url':expired_url},new_html
+    except: return assignment,html
+
 def submit_assignment(session,assignment,user_id):
     try:
         qscript_list,total_questions,id_courseware,id_cate,html,page_params=extract_quiz_info(session,assignment['url'],assignment['is_video'])
+
+        # Xử lý bài quá hạn → retry với pass_expired=1
+        if 'quá hạn' in html:
+            assignment,html=_resolve_expired(session,assignment,html)
+            qscript_list,total_questions,id_courseware,id_cate,html,page_params=extract_quiz_info(session,assignment['url'],assignment['is_video'])
+
         if assignment['is_video']:
             return handle_video_submission(session,assignment,user_id,qscript_list,total_questions,id_courseware,id_cate,html,page_params)
         if total_questions==0: return False
@@ -721,7 +735,7 @@ def solve_specific_from_list(session,user_id,is_vip,remaining_uses,assignments=N
         success=submit_assignment(session,assignment,user_id)
         sp.stop(success,'🎉 Thành công!' if success else '✘ Thất bại')
         if success: success_count+=1;remaining_uses=_deduct_use(is_vip,remaining_uses)
-        if i<total: wait_t=random.randint(2,4);animate_progress(f'Chờ {wait_t}s…',duration=wait_t)
+        if i<total: print(f'  {C.GRAY}⏸  Chờ 1s…{C.END}');time.sleep(1)
     print()
     ui_box([f'Đã xử lý:   {C.BYELLOW}{total} bài{C.END}',f'{C.BGREEN}Thành công: {C.BYELLOW}{success_count} bài{C.END}',f'{C.BRED}Thất bại:   {C.BYELLOW}{total-success_count} bài{C.END}'],C.CYAN,title='KẾT QUẢ')
     pause();return success_count>0,remaining_uses
