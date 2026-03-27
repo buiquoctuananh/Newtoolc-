@@ -1210,8 +1210,8 @@ def solve_link(session,uid,is_vip,is_ultra=False):
         a={'title':'Bài từ link','subject':'','type':lbl,'status':'Chưa làm','url':url,'page':1,'is_video':iv,'is_ly_thuyet':ilt,'is_bai_tap':ibt,'is_kiem_tra':ikt,'is_tu_luan':False}
         exam_sec=None; exam_target_correct=None
         if ikt:
-            ti=ask('Thời gian làm bài (phút)').strip()
-            try: exam_sec=int(ti)*60 if ti else None
+            ti=ask('Thời gian làm bài (giây, vd: 30)').strip()
+            try: exam_sec=int(float(ti)) if ti else None
             except: exam_sec=None
             sc_ch=ask('Tùy chọn điểm? (y/n)').strip().lower()
             if sc_ch=='y':
@@ -1263,8 +1263,8 @@ def solve_list(session,uid,is_vip,asgns=None,is_ultra=False):
     has_kt=any(asgns[i]['is_kiem_tra'] for i in idxs)
     exam_sec=None; exam_score_custom=False
     if has_kt and is_ultra:
-        ti=ask('Thời gian làm bài kiểm tra (phút)').strip()
-        try: exam_sec=int(ti)*60 if ti else None
+        ti=ask('Thời gian làm bài kiểm tra (giây, vd: 30)').strip()
+        try: exam_sec=int(float(ti)) if ti else None
         except: exam_sec=None
         sc_ch=ask('Tùy chọn điểm bài kiểm tra? (y/n)').strip().lower()
         if sc_ch=='y': exam_score_custom=True
